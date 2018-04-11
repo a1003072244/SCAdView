@@ -21,7 +21,7 @@
 #define SC_AD_CELL_IDENTIFIER @"SC_AD_CELL_IDENTIFIER"
 #define SC_ERROR(_DESC_)  NSCAssert(0,_DESC_)
 ///轮播两侧准备的item倍数 count of prepared item group at the both side
-#define SC_PREPARE_ITEM_TIME 2
+#define SC_PREPARE_ITEM_TIME 20
 @interface SCAdView()<SCCollectionViewFlowLayoutDelegate>
 {
     SCAdViewBuilder *_builder;
@@ -115,7 +115,7 @@
     layout.secondaryItemMinAlpha = builder.secondaryItemMinAlpha;
     layout.threeDimensionalScale = builder.threeDimensionalScale;
     layout.delegate = self;
-    layout.cycleIndex = builder.allowedInfinite?_builder.adArray.count*SC_PREPARE_ITEM_TIME:-1;
+    layout.cycleIndex = builder.allowedInfinite?(_builder.adArray.count*SC_PREPARE_ITEM_TIME + builder.startIndex):-1;
     _layout = layout;
     if(_builder.autoScrollDirection>1){
         CGFloat y_inset =(self.frame.size.height-layout.itemSize.height) / 2.f;
@@ -253,8 +253,10 @@
 
 #pragma mark -layout delegate
 -(void)sc_collectioViewScrollToIndex:(NSInteger)index{
+    NSInteger pageIndex = index%_builder.adArray.count;
+    self.currentPageIndex = pageIndex;
     if (self.delegate &&[self.delegate respondsToSelector:@selector(sc_scrollToIndex:)]) {
-        [self.delegate sc_scrollToIndex:index%_builder.adArray.count];
+        [self.delegate sc_scrollToIndex:pageIndex];
     }
 }
 
@@ -312,5 +314,8 @@
     _layout.cycleIndex =_builder.allowedInfinite?_builder.adArray.count*SC_PREPARE_ITEM_TIME:-1;
     [self.collectionView reloadData];
     [self _secretlyChangeIndex];
+}
+- (void)scrollToPage:(NSInteger)index animation:(BOOL)animation{
+    [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:_builder.adArray.count*SC_PREPARE_ITEM_TIME+index inSection:0] atScrollPosition:(UICollectionViewScrollPositionCenteredHorizontally) animated:animation];
 }
 @end

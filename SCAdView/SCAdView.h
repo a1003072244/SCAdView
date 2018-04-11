@@ -52,6 +52,8 @@ typedef NS_ENUM(NSInteger,SCAdViewScrollDirection) {
  */
 @property (nonatomic,assign)BOOL scrollEnabled;
 
+@property (nonatomic, assign) NSInteger startIndex;
+
 #pragma mark -非必要参数，有默认值
 /**
  *   无限轮播间隔
@@ -92,6 +94,7 @@ typedef NS_ENUM(NSInteger,SCAdViewScrollDirection) {
 
 @interface SCAdView : UIView
 @property (nonatomic,weak)id<SCAdViewDelegate>delegate;
+@property (nonatomic, assign) NSInteger currentPageIndex;
 /**
  *  @brief 构造方法
  *  @param builderBlock 通过在block中配置builder中的参数来实现对广告view的不同设置
@@ -111,4 +114,10 @@ typedef NS_ENUM(NSInteger,SCAdViewScrollDirection) {
  *  @param adArray 内容数组
  */
 -(void)reloadWithDataArray:(NSArray *)adArray;
+
+/**
+ *  @brief 手动滚动到某个位置
+ *  @param index 对应的位置
+ */
+- (void)scrollToPage:(NSInteger)index animation:(BOOL)animation;
 @end
