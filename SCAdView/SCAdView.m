@@ -48,6 +48,8 @@
  *   data
  */
 @property (nonatomic,strong)NSMutableArray *dataArray;
+
+@property (nonatomic, assign) BOOL allowedInfinite;
 @end
 
 @implementation SCAdView
@@ -64,6 +66,7 @@
         if (builderBlock) {
             builderBlock(builder);
         }
+        self.allowedInfinite = builder.allowedInfinite;
         [self _auto_set_builder:builder];
         [self setUpWithBuilder:builder];
     }
@@ -316,6 +319,12 @@
     [self _secretlyChangeIndex];
 }
 - (void)scrollToPage:(NSInteger)index animation:(BOOL)animation{
-    [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:_builder.adArray.count*SC_PREPARE_ITEM_TIME+index inSection:0] atScrollPosition:(UICollectionViewScrollPositionCenteredHorizontally) animated:animation];
+    NSInteger toIndex = index;
+    if (self.allowedInfinite) {
+        toIndex = _builder.adArray.count*SC_PREPARE_ITEM_TIME+index;
+    } else {
+        toIndex = index;
+    }
+    [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:toIndex inSection:0] atScrollPosition:(UICollectionViewScrollPositionCenteredHorizontally) animated:animation];
 }
 @end
